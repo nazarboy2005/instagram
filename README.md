@@ -12,13 +12,18 @@
 2. Click **"New Project"** → **"Deploy from GitHub repo"**
 3. Connect your GitHub account and select this repository
 4. Railway will auto-detect PHP and deploy
-5. Go to **Variables** tab and add:
+5. **Important**: Go to **Settings** tab and set **Start Command**:
+   ```
+   cd "Web Server Files" && php -S 0.0.0.0:$PORT router.php
+   ```
+6. Go to **Variables** tab and add:
    ```
    TELEGRAM_BOT_TOKEN=8287031383:AAEUkQ0Yk9aiWGiG7_1d4SjIfAgR8msEWBA
    TELEGRAM_CHAT_ID=8244999766
    BASE_URL=https://your-app.railway.app
    ```
-6. Copy your Railway app URL (e.g., `https://your-app.railway.app`)
+7. Go to **Settings** → **Networking** → Click **"Generate Domain"** to expose your service
+8. Copy your Railway app URL (e.g., `https://instagram-production-xxxx.up.railway.app`)
 
 #### Option B: Deploy via Railway CLI
 
