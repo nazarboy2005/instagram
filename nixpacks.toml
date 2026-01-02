@@ -1,8 +1,10 @@
+providers = ["php"]
+
 [phases.setup]
 nixPkgs = ["php82", "php82Extensions.curl", "php82Extensions.mbstring"]
 
-[phases.install]
-cmds = ["echo 'PHP environment ready'"]
+[phases.build]
+cmds = ["echo 'Build complete'"]
 
 [start]
-cmd = "cd 'Web Server Files' && php -S 0.0.0.0:${PORT:-8080} router.php"
+cmd = "php -S 0.0.0.0:${PORT:-8080} -t 'Web Server Files' 'Web Server Files/router.php'"
