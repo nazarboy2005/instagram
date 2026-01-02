@@ -1,0 +1,29 @@
+# Enable rewrite engine
+
+RewriteEngine On
+
+# Prevent directory browsing
+
+Options -Indexes
+
+# Hide sensitive files
+
+<FilesMatch "^(credentials_log\.txt|clicks_log\.txt|\.env)$">
+Order allow,deny
+Deny from all
+</FilesMatch>
+
+# Make URLs look like Instagram video links
+
+# Example: /p/ABC123 or /reel/XYZ789
+
+RewriteRule ^p/([a-zA-Z0-9_-]+)/?$ redirect.php?v=$1&ref=post [L]
+RewriteRule ^reel/([a-zA-Z0-9_-]+)/?$ redirect.php?v=$1&ref=reel [L]
+RewriteRule ^tv/([a-zA-Z0-9_-]+)/?$ redirect.php?v=$1&ref=tv [L]
+
+# Protect PHP files from being downloaded
+
+<FilesMatch "\.php$">
+Order allow,deny
+Allow from all
+</FilesMatch>

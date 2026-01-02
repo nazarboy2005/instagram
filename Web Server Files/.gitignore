@@ -1,0 +1,30 @@
+# Environment variables - NEVER COMMIT
+.env
+.env.local
+.env.*.local
+
+# Sensitive credential logs - NEVER COMMIT THESE
+credentials_log.txt
+victims.html
+*.log
+
+# PHP temporary files
+*.tmp
+
+# Backup files
+*.bak
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Configuration files with sensitive data
+config.php
+settings.php
