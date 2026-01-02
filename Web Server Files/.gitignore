@@ -2,11 +2,8 @@
 .env
 .env.local
 
-# Sensitive logs
-credentials_log.txt
-clicks_log.txt
+# URL mappings (needed for functionality but shouldn't be committed)
 url_mappings.json
-*.log
 
 # OS files
 .DS_Store

